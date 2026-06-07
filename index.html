@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Donations</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(72, 215, 255, 0.18), transparent 32%),
+        radial-gradient(circle at 80% 10%, rgba(132, 92, 255, 0.24), transparent 34%),
+        radial-gradient(circle at 50% 90%, rgba(36, 255, 181, 0.10), transparent 38%),
+        linear-gradient(135deg, #050814, #0b1020 45%, #050814);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      overflow-x: hidden;
+    }
+
+    .page-glow {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      background: rgba(72, 215, 255, 0.12);
+      filter: blur(80px);
+      top: -120px;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 36px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(18px);
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(72, 215, 255, 0.26);
+      background: rgba(72, 215, 255, 0.08);
+      color: #9cecff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(34px, 6vw, 58px);
+      margin: 0;
+      line-height: 1;
+      letter-spacing: -1.5px;
+    }
+
+    .sub {
+      color: #b8c4dd;
+      max-width: 620px;
+      margin: 18px auto 0;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .coin {
+      position: relative;
+      overflow: hidden;
+      min-height: 180px;
+      border-radius: 24px;
+      padding: 22px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035));
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+
+    .coin::before {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 999px;
+      right: -56px;
+      top: -56px;
+      background: var(--glow);
+      opacity: 0.18;
+      filter: blur(8px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .coin:hover {
+      transform: translateY(-6px);
+      border-color: rgba(72, 215, 255, 0.55);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.145), rgba(255, 255, 255, 0.05));
+    }
+
+    .coin:hover::before {
+      opacity: 0.32;
+      transform: scale(1.15);
+    }
+
+    .ticker {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 17px;
+      color: #07101c;
+      background: var(--accent);
+      box-shadow: 0 0 28px var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .coin-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .network {
+      font-size: 13px;
+      color: #b8c4dd;
+      line-height: 1.4;
+    }
+
+    .tap {
+      margin-top: 22px;
+      font-size: 13px;
+      color: #9cecff;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      color: #7f8da8;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(1, 4, 12, 0.78);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      position: relative;
+      width: 100%;
+      max-width: 460px;
+      border-radius: 30px;
+      padding: 26px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background:
+        radial-gradient(circle at top, rgba(72, 215, 255, 0.12), transparent 40%),
+        linear-gradient(145deg, rgba(17, 27, 48, 0.98), rgba(8, 13, 27, 0.98));
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+    }
+
+    .x {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    #modalTitle {
+      margin: 8px 0 8px;
+      font-size: 28px;
+    }
+
+    .modal-network {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(72, 215, 255, 0.09);
+      border: 1px solid rgba(72, 215, 255, 0.18);
+      color: #9cecff;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    #qr {
+      background: white;
+      padding: 14px;
+      border-radius: 20px;
+      margin: 10px auto 18px;
+      width: fit-content;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    .address {
+      word-break: break-all;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      padding: 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      color: #dce8ff;
+      line-height: 1.45;
+    }
+
+    .warning {
+      color: #ffd36b;
+      font-size: 13px;
+      margin: 14px 0 16px;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    .copy {
+      background: linear-gradient(135deg, #48d7ff, #5dffca);
+      color: #06101a;
+      box-shadow: 0 0 24px rgba(72, 215, 255, 0.28);
+    }
+
+    .close {
+      background: rgba(255, 255, 255, 0.09);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(30px);
+      opacity: 0;
+      background: rgba(8, 13, 27, 0.96);
+      color: white;
+      border: 1px solid rgba(72, 215, 255, 0.25);
+      padding: 12px 16px;
+      border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.38);
+      transition: 0.22s ease;
+      z-index: 40;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero {
+        padding: 28px 18px;
+      }
+
+      .coin {
+        min-height: 155px;
+      }
+
+      .modal-box {
+        padding: 22px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-glow"></div>
+
+  <main class="container">
+    <section class="hero">
+      <div class="badge">Secure Crypto Donations</div>
+      <h1>Support the Stream</h1>
+      <p class="sub">
+        Choose a coin below to reveal the correct wallet address and QR code.
+        Always double-check the coin and network before sending.
+      </p>
+    </section>
+
+    <section class="grid" id="coinGrid"></section>
+
+    <p class="footer-note">
+      Crypto transactions are final. Send only the listed coin on the listed network.
+    </p>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <button class="x" onclick="closeModal()">×</button>
+
+      <h2 id="modalTitle"></h2>
+      <div class="modal-network" id="modalNetwork"></div>
+
+      <div id="qr"></div>
+
+      <div class="address" id="addressText"></div>
+      <p class="warning" id="warningText"></p>
+
+      <div class="actions">
+        <button class="copy" onclick="copyAddress()">Copy Address</button>
+        <button class="close" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Address copied.</div>
+
+  <script>
+    const donations = [
+      {
+        name: "Bitcoin",
+        short: "BTC",
+        network: "Bitcoin Network",
+        address: "PUT_YOUR_BTC_ADDRESS_HERE",
+        warning: "Send BTC only on the Bitcoin network.",
+        accent: "#f7b955",
+        shadow: "rgba(247, 185, 85, 0.35)",
+        glow: "rgba(247, 185, 85, 0.9)"
+      },
+      {
+        name: "Ethereum",
+        short: "ETH",
+        network: "Ethereum / ERC-20",
+        address: "PUT_YOUR_ETH_ADDRESS_HERE",
+        warning: "Send ETH or ERC-20 tokens only to this address.",
+        accent: "#8aa4ff",
+        shadow: "rgba(138, 164, 255, 0.35)",
+        glow: "rgba(138, 164, 255, 0.9)"
+      },
+      {
+        name: "Solana",
+        short: "SOL",
+        network: "Solana Network",
+        address: "PUT_YOUR_SOL_ADDRESS_HERE",
+        warning: "Send SOL only on the Solana network.",
+        accent: "#5dffca",
+        shadow: "rgba(93, 255, 202, 0.35)",
+        glow: "rgba(93, 255, 202, 0.9)"
+      },
+      {
+        name: "Litecoin",
+        short: "LTC",
+        network: "Litecoin Network",
+        address: "PUT_YOUR_LTC_ADDRESS_HERE",
+        warning: "Send LTC only on the Litecoin network.",
+        accent: "#c8d4ef",
+        shadow: "rgba(200, 212, 239, 0.28)",
+        glow: "rgba(200, 212, 239, 0.75)"
+      }
+    ];
+
+    let currentAddress = "";
+
+    const grid = document.getElementById("coinGrid");
+    const modal = document.getElementById("modal");
+    const toast = document.getElementById("toast");
+
+    donations.forEach((coin) => {
+      const div = document.createElement("div");
+      div.className = "coin";
+      div.style.setProperty("--accent", coin.accent);
+      div.style.setProperty("--shadow", coin.shadow);
+      div.style.setProperty("--glow", coin.glow);
+
+      div.innerHTML = `
+        <div class="ticker">${coin.short}</div>
+        <div class="coin-name">${coin.name}</div>
+        <div class="network">${coin.network}</div>
+        <div class="tap">View QR Code</div>
+      `;
+
+      div.onclick = () => openModal(coin);
+      grid.appendChild(div);
+    });
+
+    function openModal(coin) {
+      currentAddress = coin.address;
+
+      document.getElementById("modalTitle").textContent = `${coin.name} Donation`;
+      document.getElementById("modalNetwork").textContent = coin.network;
+      document.getElementById("addressText").textContent = coin.address;
+      document.getElementById("warningText").textContent = coin.warning;
+
+      const qrBox = document.getElementById("qr");
+      qrBox.innerHTML = "";
+
+      QRCode.toCanvas(coin.address, {
+        width: 230,
+        margin: 1
+      }, function (err, canvas) {
+        if (!err) qrBox.appendChild(canvas);
+      });
+
+      modal.classList.add("show");
+    }
+
+    function closeModal() {
+      modal.classList.remove("show");
+    }
+
+    async function copyAddress() {
+      try {
+        await navigator.clipboard.writeText(currentAddress);
+        showToast("Address copied.");
+      } catch (err) {
+        const temp = document.createElement("textarea");
+        temp.value = currentAddress;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+        showToast("Address copied.");
+      }
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1800);
+    }
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
