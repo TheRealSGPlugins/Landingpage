@@ -15,7 +15,7 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Inter, Arial, sans-serif;
+      font-family: Arial, sans-serif;
       color: white;
       background:
         radial-gradient(circle at 20% 20%, rgba(72, 215, 255, 0.18), transparent 32%),
@@ -61,8 +61,6 @@
 
     .badge {
       display: inline-flex;
-      align-items: center;
-      gap: 8px;
       padding: 8px 14px;
       border-radius: 999px;
       border: 1px solid rgba(72, 215, 255, 0.26);
@@ -105,8 +103,7 @@
       padding: 22px;
       cursor: pointer;
       border: 1px solid rgba(255, 255, 255, 0.12);
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035));
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035));
       box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
       transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
     }
@@ -128,8 +125,7 @@
     .coin:hover {
       transform: translateY(-6px);
       border-color: rgba(72, 215, 255, 0.55);
-      background:
-        linear-gradient(145deg, rgba(255, 255, 255, 0.145), rgba(255, 255, 255, 0.05));
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.145), rgba(255, 255, 255, 0.05));
     }
 
     .coin:hover::before {
@@ -245,7 +241,17 @@
       border-radius: 20px;
       margin: 10px auto 18px;
       width: fit-content;
+      min-height: 258px;
+      display: grid;
+      place-items: center;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    #qr canvas,
+    #qr img {
+      display: block;
+      width: 230px;
+      height: 230px;
     }
 
     .address {
@@ -363,7 +369,7 @@
 
   <div class="modal" id="modal">
     <div class="modal-box">
-      <button class="x" onclick="closeModal()">×</button>
+      <button class="x" id="xButton">×</button>
 
       <h2 id="modalTitle"></h2>
       <div class="modal-network" id="modalNetwork"></div>
@@ -374,8 +380,8 @@
       <p class="warning" id="warningText"></p>
 
       <div class="actions">
-        <button class="copy" onclick="copyAddress()">Copy Address</button>
-        <button class="close" onclick="closeModal()">Close</button>
+        <button class="copy" id="copyButton">Copy Address</button>
+        <button class="close" id="closeButton">Close</button>
       </div>
     </div>
   </div>
@@ -383,132 +389,172 @@
   <div class="toast" id="toast">Address copied.</div>
 
   <script>
-    const donations = [
-      {
-        name: "Bitcoin",
-        short: "BTC",
-        network: "Bitcoin Network",
-        address: "PUT_YOUR_BTC_ADDRESS_HERE",
-        warning: "Send BTC only on the Bitcoin network.",
-        accent: "#f7b955",
-        shadow: "rgba(247, 185, 85, 0.35)",
-        glow: "rgba(247, 185, 85, 0.9)"
-      },
-      {
-        name: "Ethereum",
-        short: "ETH",
-        network: "Ethereum / ERC-20",
-        address: "PUT_YOUR_ETH_ADDRESS_HERE",
-        warning: "Send ETH or ERC-20 tokens only to this address.",
-        accent: "#8aa4ff",
-        shadow: "rgba(138, 164, 255, 0.35)",
-        glow: "rgba(138, 164, 255, 0.9)"
-      },
-      {
-        name: "Solana",
-        short: "SOL",
-        network: "Solana Network",
-        address: "PUT_YOUR_SOL_ADDRESS_HERE",
-        warning: "Send SOL only on the Solana network.",
-        accent: "#5dffca",
-        shadow: "rgba(93, 255, 202, 0.35)",
-        glow: "rgba(93, 255, 202, 0.9)"
-      },
-      {
-        name: "Litecoin",
-        short: "LTC",
-        network: "Litecoin Network",
-        address: "PUT_YOUR_LTC_ADDRESS_HERE",
-        warning: "Send LTC only on the Litecoin network.",
-        accent: "#c8d4ef",
-        shadow: "rgba(200, 212, 239, 0.28)",
-        glow: "rgba(200, 212, 239, 0.75)"
-      }
-    ];
+    document.addEventListener("DOMContentLoaded", function () {
+      const donations = [
+        {
+          name: "Bitcoin",
+          short: "BTC",
+          network: "Bitcoin Network",
+          address: "PUT_YOUR_BTC_ADDRESS_HERE",
+          warning: "Send BTC only on the Bitcoin network.",
+          accent: "#f7b955",
+          shadow: "rgba(247, 185, 85, 0.35)",
+          glow: "rgba(247, 185, 85, 0.9)"
+        },
+        {
+          name: "Ethereum",
+          short: "ETH",
+          network: "Ethereum / ERC-20",
+          address: "PUT_YOUR_ETH_ADDRESS_HERE",
+          warning: "Send ETH or ERC-20 tokens only to this address.",
+          accent: "#8aa4ff",
+          shadow: "rgba(138, 164, 255, 0.35)",
+          glow: "rgba(138, 164, 255, 0.9)"
+        },
+        {
+          name: "Solana",
+          short: "SOL",
+          network: "Solana Network",
+          address: "PUT_YOUR_SOL_ADDRESS_HERE",
+          warning: "Send SOL only on the Solana network.",
+          accent: "#5dffca",
+          shadow: "rgba(93, 255, 202, 0.35)",
+          glow: "rgba(93, 255, 202, 0.9)"
+        },
+        {
+          name: "Litecoin",
+          short: "LTC",
+          network: "Litecoin Network",
+          address: "PUT_YOUR_LTC_ADDRESS_HERE",
+          warning: "Send LTC only on the Litecoin network.",
+          accent: "#c8d4ef",
+          shadow: "rgba(200, 212, 239, 0.28)",
+          glow: "rgba(200, 212, 239, 0.75)"
+        }
+      ];
 
-    let currentAddress = "";
+      let currentAddress = "";
 
-    const grid = document.getElementById("coinGrid");
-    const modal = document.getElementById("modal");
-    const toast = document.getElementById("toast");
+      const grid = document.getElementById("coinGrid");
+      const modal = document.getElementById("modal");
+      const toast = document.getElementById("toast");
+      const xButton = document.getElementById("xButton");
+      const closeButton = document.getElementById("closeButton");
+      const copyButton = document.getElementById("copyButton");
 
-    donations.forEach((coin) => {
-      const div = document.createElement("div");
-      div.className = "coin";
-      div.style.setProperty("--accent", coin.accent);
-      div.style.setProperty("--shadow", coin.shadow);
-      div.style.setProperty("--glow", coin.glow);
+      donations.forEach(function (coin) {
+        const div = document.createElement("div");
+        div.className = "coin";
+        div.style.setProperty("--accent", coin.accent);
+        div.style.setProperty("--shadow", coin.shadow);
+        div.style.setProperty("--glow", coin.glow);
 
-      div.innerHTML = `
-        <div class="ticker">${coin.short}</div>
-        <div class="coin-name">${coin.name}</div>
-        <div class="network">${coin.network}</div>
-        <div class="tap">View QR Code</div>
-      `;
+        div.innerHTML = `
+          <div class="ticker">${coin.short}</div>
+          <div class="coin-name">${coin.name}</div>
+          <div class="network">${coin.network}</div>
+          <div class="tap">View QR Code</div>
+        `;
 
-      div.onclick = () => openModal(coin);
-      grid.appendChild(div);
-    });
+        div.addEventListener("click", function () {
+          openModal(coin);
+        });
 
-    function openModal(coin) {
-      currentAddress = coin.address;
-
-      document.getElementById("modalTitle").textContent = `${coin.name} Donation`;
-      document.getElementById("modalNetwork").textContent = coin.network;
-      document.getElementById("addressText").textContent = coin.address;
-      document.getElementById("warningText").textContent = coin.warning;
-
-      const qrBox = document.getElementById("qr");
-      qrBox.innerHTML = "";
-
-      QRCode.toCanvas(coin.address, {
-        width: 230,
-        margin: 1
-      }, function (err, canvas) {
-        if (!err) qrBox.appendChild(canvas);
+        grid.appendChild(div);
       });
 
-      modal.classList.add("show");
-    }
+      function openModal(coin) {
+        currentAddress = coin.address;
 
-    function closeModal() {
-      modal.classList.remove("show");
-    }
+        document.getElementById("modalTitle").textContent = coin.name + " Donation";
+        document.getElementById("modalNetwork").textContent = coin.network;
+        document.getElementById("addressText").textContent = coin.address;
+        document.getElementById("warningText").textContent = coin.warning;
 
-    async function copyAddress() {
-      try {
-        await navigator.clipboard.writeText(currentAddress);
-        showToast("Address copied.");
-      } catch (err) {
-        const temp = document.createElement("textarea");
-        temp.value = currentAddress;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        document.body.removeChild(temp);
-        showToast("Address copied.");
+        modal.classList.add("show");
+        generateQR(coin.address);
       }
-    }
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
+      function generateQR(address) {
+        const qrBox = document.getElementById("qr");
+        qrBox.innerHTML = "Loading QR...";
 
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 1800);
-    }
+        if (window.QRCode && typeof QRCode.toCanvas === "function") {
+          qrBox.innerHTML = "";
 
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        closeModal();
+          QRCode.toCanvas(address, {
+            width: 230,
+            margin: 1
+          }, function (err, canvas) {
+            if (err) {
+              showFallbackQR(address);
+              return;
+            }
+
+            qrBox.innerHTML = "";
+            qrBox.appendChild(canvas);
+          });
+        } else {
+          showFallbackQR(address);
+        }
       }
-    });
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeModal();
+      function showFallbackQR(address) {
+        const qrBox = document.getElementById("qr");
+        qrBox.innerHTML = "";
+
+        const img = document.createElement("img");
+        img.src = "https://api.qrserver.com/v1/create-qr-code/?size=230x230&data=" + encodeURIComponent(address);
+        img.alt = "Donation QR Code";
+        img.width = 230;
+        img.height = 230;
+
+        qrBox.appendChild(img);
       }
+
+      function closeModal() {
+        modal.classList.remove("show");
+      }
+
+      async function copyAddress() {
+        try {
+          await navigator.clipboard.writeText(currentAddress);
+          showToast("Address copied.");
+        } catch (err) {
+          const temp = document.createElement("textarea");
+          temp.value = currentAddress;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand("copy");
+          document.body.removeChild(temp);
+          showToast("Address copied.");
+        }
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        setTimeout(function () {
+          toast.classList.remove("show");
+        }, 1800);
+      }
+
+      xButton.addEventListener("click", closeModal);
+      closeButton.addEventListener("click", closeModal);
+      copyButton.addEventListener("click", copyAddress);
+
+      modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
     });
   </script>
 </body>
