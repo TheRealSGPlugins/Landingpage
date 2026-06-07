@@ -12,78 +12,201 @@
       box-sizing: border-box;
     }
 
-    body {
+    :root {
+      --bg-1: #050816;
+      --bg-2: #090d1f;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text-soft: #b8c4dd;
+      --cyan: #48d7ff;
+      --mint: #5dffca;
+      --purple: #9a6bff;
+      --pink: #ff62d4;
+      --yellow: #ffd36b;
+    }
+
+    html, body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100%;
       font-family: Arial, sans-serif;
       color: white;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(72, 215, 255, 0.18), transparent 32%),
-        radial-gradient(circle at 80% 10%, rgba(132, 92, 255, 0.24), transparent 34%),
-        radial-gradient(circle at 50% 90%, rgba(36, 255, 181, 0.10), transparent 38%),
-        linear-gradient(135deg, #050814, #0b1020 45%, #050814);
+      background: radial-gradient(circle at top, #0d1330 0%, #060914 45%, #03050d 100%);
+      overflow-x: hidden;
+    }
+
+    body {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 28px;
-      overflow-x: hidden;
     }
 
-    .page-glow {
+    /* BACKGROUND */
+    .space-bg {
       position: fixed;
-      width: 420px;
-      height: 420px;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(72, 215, 255, 0.12), transparent 20%),
+        radial-gradient(circle at 80% 15%, rgba(154, 107, 255, 0.12), transparent 24%),
+        radial-gradient(circle at 60% 80%, rgba(93, 255, 202, 0.08), transparent 20%),
+        linear-gradient(180deg, #060914 0%, #04070f 40%, #02040b 100%);
+    }
+
+    .nebula {
+      position: absolute;
       border-radius: 999px;
-      background: rgba(72, 215, 255, 0.12);
-      filter: blur(80px);
-      top: -120px;
-      right: -100px;
+      filter: blur(60px);
+      opacity: 0.65;
+      animation: pulseDrift 8s ease-in-out infinite;
+      mix-blend-mode: screen;
+    }
+
+    .nebula.one {
+      width: 320px;
+      height: 320px;
+      left: 6%;
+      top: 8%;
+      background: rgba(72, 215, 255, 0.18);
+      animation-delay: 0s;
+    }
+
+    .nebula.two {
+      width: 360px;
+      height: 360px;
+      right: 8%;
+      top: 12%;
+      background: rgba(154, 107, 255, 0.18);
+      animation-delay: 2s;
+    }
+
+    .nebula.three {
+      width: 280px;
+      height: 280px;
+      left: 18%;
+      bottom: 8%;
+      background: rgba(255, 98, 212, 0.14);
+      animation-delay: 4s;
+    }
+
+    .nebula.four {
+      width: 300px;
+      height: 300px;
+      right: 16%;
+      bottom: 6%;
+      background: rgba(93, 255, 202, 0.14);
+      animation-delay: 1s;
+    }
+
+    @keyframes pulseDrift {
+      0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.45;
+      }
+      50% {
+        transform: scale(1.15) translate(8px, -10px);
+        opacity: 0.82;
+      }
+      100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.45;
+      }
+    }
+
+    .stars,
+    .stars2 {
+      position: absolute;
+      inset: 0;
       pointer-events: none;
     }
 
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: white;
+      box-shadow:
+        0 0 6px rgba(255, 255, 255, 0.95),
+        0 0 12px rgba(72, 215, 255, 0.45);
+      animation: twinkle ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    .star.small {
+      width: 2px;
+      height: 2px;
+    }
+
+    .star.medium {
+      width: 3px;
+      height: 3px;
+    }
+
+    .star.big {
+      width: 4px;
+      height: 4px;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.15;
+        transform: scale(0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.35);
+      }
+    }
+
     .container {
-      width: 100%;
-      max-width: 960px;
       position: relative;
-      z-index: 1;
+      z-index: 2;
+      width: 100%;
+      max-width: 980px;
     }
 
     .hero {
       text-align: center;
-      padding: 36px 24px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 38px 24px;
+      margin-bottom: 22px;
       border-radius: 28px;
       background: rgba(255, 255, 255, 0.055);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--panel-border);
       backdrop-filter: blur(18px);
-      margin-bottom: 22px;
+      box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.35),
+        inset 0 0 50px rgba(255, 255, 255, 0.02);
     }
 
     .badge {
       display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 8px 14px;
       border-radius: 999px;
-      border: 1px solid rgba(72, 215, 255, 0.26);
+      border: 1px solid rgba(72, 215, 255, 0.25);
       background: rgba(72, 215, 255, 0.08);
       color: #9cecff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.4px;
-      margin-bottom: 18px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
     }
 
     h1 {
-      font-size: clamp(34px, 6vw, 58px);
       margin: 0;
+      font-size: clamp(34px, 6vw, 58px);
       line-height: 1;
       letter-spacing: -1.5px;
+      text-shadow: 0 0 25px rgba(72, 215, 255, 0.12);
     }
 
     .sub {
-      color: #b8c4dd;
-      max-width: 620px;
+      max-width: 650px;
       margin: 18px auto 0;
+      color: var(--text-soft);
       line-height: 1.6;
       font-size: 16px;
     }
@@ -92,45 +215,51 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 16px;
-      margin-top: 22px;
+      margin-top: 20px;
     }
 
     .coin {
       position: relative;
       overflow: hidden;
-      min-height: 180px;
+      min-height: 185px;
       border-radius: 24px;
       padding: 22px;
       cursor: pointer;
       border: 1px solid rgba(255, 255, 255, 0.12);
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035));
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
-      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
+      box-shadow:
+        0 18px 50px rgba(0, 0, 0, 0.30),
+        inset 0 0 20px rgba(255, 255, 255, 0.015);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      backdrop-filter: blur(14px);
     }
 
     .coin::before {
       content: "";
       position: absolute;
-      width: 150px;
-      height: 150px;
+      width: 160px;
+      height: 160px;
+      right: -55px;
+      top: -55px;
       border-radius: 999px;
-      right: -56px;
-      top: -56px;
       background: var(--glow);
-      opacity: 0.18;
-      filter: blur(8px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
+      opacity: 0.20;
+      filter: blur(12px);
+      transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
     .coin:hover {
       transform: translateY(-6px);
-      border-color: rgba(72, 215, 255, 0.55);
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.145), rgba(255, 255, 255, 0.05));
+      border-color: rgba(72, 215, 255, 0.45);
+      box-shadow:
+        0 22px 60px rgba(0, 0, 0, 0.34),
+        0 0 35px rgba(72, 215, 255, 0.10);
     }
 
     .coin:hover::before {
-      opacity: 0.32;
       transform: scale(1.15);
+      opacity: 0.35;
     }
 
     .ticker {
@@ -155,7 +284,7 @@
 
     .network {
       font-size: 13px;
-      color: #b8c4dd;
+      color: var(--text-soft);
       line-height: 1.4;
     }
 
@@ -164,25 +293,28 @@
       font-size: 13px;
       color: #9cecff;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .footer-note {
       margin-top: 18px;
       text-align: center;
-      color: #7f8da8;
+      color: #8190ab;
       font-size: 13px;
       line-height: 1.5;
     }
 
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(1, 4, 12, 0.78);
+      z-index: 30;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      z-index: 20;
+      background: rgba(2, 6, 18, 0.78);
       backdrop-filter: blur(10px);
     }
 
@@ -191,41 +323,29 @@
     }
 
     .modal-box {
-      position: relative;
       width: 100%;
-      max-width: 460px;
+      max-width: 470px;
       border-radius: 30px;
       padding: 26px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.14);
       background:
-        radial-gradient(circle at top, rgba(72, 215, 255, 0.12), transparent 40%),
-        linear-gradient(145deg, rgba(17, 27, 48, 0.98), rgba(8, 13, 27, 0.98));
-      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
-    }
-
-    .x {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      cursor: pointer;
-      font-size: 18px;
+        radial-gradient(circle at top, rgba(72, 215, 255, 0.10), transparent 38%),
+        linear-gradient(145deg, rgba(15, 24, 42, 0.98), rgba(7, 11, 24, 0.98));
+      box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.55),
+        0 0 40px rgba(72, 215, 255, 0.08);
+      backdrop-filter: blur(12px);
     }
 
     #modalTitle {
-      margin: 8px 0 8px;
+      margin: 0 0 10px;
       font-size: 28px;
     }
 
     .modal-network {
       display: inline-flex;
-      padding: 7px 12px;
+      padding: 8px 12px;
       border-radius: 999px;
       background: rgba(72, 215, 255, 0.09);
       border: 1px solid rgba(72, 215, 255, 0.18);
@@ -236,14 +356,14 @@
     }
 
     #qr {
-      background: white;
-      padding: 14px;
-      border-radius: 20px;
-      margin: 10px auto 18px;
       width: fit-content;
       min-height: 258px;
+      margin: 10px auto 18px;
+      padding: 14px;
+      border-radius: 20px;
       display: grid;
       place-items: center;
+      background: white;
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
     }
 
@@ -266,16 +386,16 @@
     }
 
     .warning {
-      color: #ffd36b;
+      color: var(--yellow);
       font-size: 13px;
-      margin: 14px 0 16px;
       line-height: 1.45;
+      margin: 14px 0 18px;
     }
 
     .actions {
       display: flex;
-      gap: 10px;
       justify-content: center;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -285,7 +405,7 @@
       padding: 13px 18px;
       cursor: pointer;
       font-weight: 800;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
     }
 
     button:hover {
@@ -310,14 +430,14 @@
       bottom: 24px;
       transform: translateX(-50%) translateY(30px);
       opacity: 0;
+      z-index: 50;
+      padding: 12px 16px;
+      border-radius: 14px;
       background: rgba(8, 13, 27, 0.96);
       color: white;
       border: 1px solid rgba(72, 215, 255, 0.25);
-      padding: 12px 16px;
-      border-radius: 14px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.38);
       transition: 0.22s ease;
-      z-index: 40;
       font-weight: 700;
       font-size: 14px;
     }
@@ -327,7 +447,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 560px) {
       body {
         padding: 16px;
       }
@@ -337,7 +457,7 @@
       }
 
       .coin {
-        min-height: 155px;
+        min-height: 160px;
       }
 
       .modal-box {
@@ -346,16 +466,21 @@
     }
   </style>
 </head>
-
 <body>
-  <div class="page-glow"></div>
+  <div class="space-bg">
+    <div class="nebula one"></div>
+    <div class="nebula two"></div>
+    <div class="nebula three"></div>
+    <div class="nebula four"></div>
+    <div class="stars" id="stars"></div>
+  </div>
 
   <main class="container">
     <section class="hero">
       <div class="badge">Secure Crypto Donations</div>
       <h1>Support the Stream</h1>
       <p class="sub">
-        Choose a coin below to reveal the correct wallet address and QR code.
+        Choose a coin below to reveal the wallet address and QR code.
         Always double-check the coin and network before sending.
       </p>
     </section>
@@ -369,8 +494,6 @@
 
   <div class="modal" id="modal">
     <div class="modal-box">
-      <button class="x" id="xButton">×</button>
-
       <h2 id="modalTitle"></h2>
       <div class="modal-network" id="modalNetwork"></div>
 
@@ -380,8 +503,8 @@
       <p class="warning" id="warningText"></p>
 
       <div class="actions">
-        <button class="copy" id="copyButton">Copy Address</button>
-        <button class="close" id="closeButton">Close</button>
+        <button class="copy" id="copyButton" type="button">Copy Address</button>
+        <button class="close" id="closeButton" type="button">Close</button>
       </div>
     </div>
   </div>
@@ -438,9 +561,37 @@
       const grid = document.getElementById("coinGrid");
       const modal = document.getElementById("modal");
       const toast = document.getElementById("toast");
-      const xButton = document.getElementById("xButton");
       const closeButton = document.getElementById("closeButton");
       const copyButton = document.getElementById("copyButton");
+      const starsContainer = document.getElementById("stars");
+
+      function createStars() {
+        const totalStars = 85;
+
+        for (let i = 0; i < totalStars; i++) {
+          const star = document.createElement("div");
+          const sizeTypeRand = Math.random();
+
+          star.classList.add("star");
+
+          if (sizeTypeRand < 0.6) {
+            star.classList.add("small");
+          } else if (sizeTypeRand < 0.9) {
+            star.classList.add("medium");
+          } else {
+            star.classList.add("big");
+          }
+
+          star.style.left = Math.random() * 100 + "%";
+          star.style.top = Math.random() * 100 + "%";
+          star.style.animationDuration = (2 + Math.random() * 4) + "s";
+          star.style.animationDelay = (Math.random() * 4) + "s";
+
+          starsContainer.appendChild(star);
+        }
+      }
+
+      createStars();
 
       donations.forEach(function (coin) {
         const div = document.createElement("div");
@@ -540,7 +691,6 @@
         }, 1800);
       }
 
-      xButton.addEventListener("click", closeModal);
       closeButton.addEventListener("click", closeModal);
       copyButton.addEventListener("click", copyAddress);
 
